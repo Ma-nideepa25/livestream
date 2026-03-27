@@ -55,7 +55,7 @@ Set Worker secrets:
 - `TELEGRAM_BOT_TOKEN`
 - `TELEGRAM_CHAT_ID`
 - `UPLOAD_SHARED_KEY` (a strong secret participants must know)
-- `ALLOWED_ORIGINS` (comma-separated origins allowed to call `/upload`, e.g. `https://your-app.pages.dev`)
+
 
 Deploy worker (example with Wrangler):
 
@@ -66,8 +66,7 @@ npx wrangler login
 npx wrangler secret put TELEGRAM_BOT_TOKEN
 npx wrangler secret put TELEGRAM_CHAT_ID
 npx wrangler secret put UPLOAD_SHARED_KEY
-npx wrangler secret put ALLOWED_ORIGINS
-npx wrangler deploy
+
 ```
 
 Copy deployed Worker URL, e.g. `https://stream-upload.<subdomain>.workers.dev`.
@@ -89,6 +88,13 @@ python3 -m http.server 8080
 ## Fastest way to run and see it (10 minutes)
 
 1. Start frontend locally:
+Set in `app/main.js`:
+
+- `UPLOAD_ENDPOINT` = your Worker URL + `/upload`
+
+Then open app in browser.
+
+## Local run
 
 ```bash
 cd app
@@ -144,6 +150,9 @@ Simpler manual flow:
 
 After hosting globally, open your public URL and use your Worker `/upload` endpoint.
 
+# open http://localhost:8080
+```
+
 ## Security model
 
 - Live room access is by room name sharing (you can distribute only to group participants).
@@ -169,3 +178,4 @@ After hosting globally, open your public URL and use your Worker `/upload` endpo
 - `app/main.js` - Jitsi embed + recording + upload flow
 - `app/styles.css` - styling
 - `worker/index.js` - secure upload proxy to Telegram Bot API
+

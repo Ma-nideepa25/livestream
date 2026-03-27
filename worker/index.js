@@ -17,16 +17,26 @@ export default {
 
     if (request.method !== "POST" || url.pathname !== "/upload") {
       return text("Not Found", 404, corsHeaders);
+    const url = new URL(request.url);
+
+    if (request.method === "GET" && url.pathname === "/health") {
+      return Response.json({ ok: true, service: "telegram-upload-bridge" });
+    }
+
+    if (request.method !== "POST" || url.pathname !== "/upload") {
+      return new Response("Not Found", { status: 404 });
     }
 
     const uploadKey = request.headers.get("X-Upload-Key");
     if (!uploadKey || uploadKey !== env.UPLOAD_SHARED_KEY) {
       return text("Unauthorized", 401, corsHeaders);
+      return new Response("Unauthorized", { status: 401 });
     }
 
     const contentType = request.headers.get("content-type") || "";
     if (!contentType.includes("multipart/form-data")) {
       return text("Expected multipart/form-data", 400, corsHeaders);
+      return new Response("Expected multipart/form-data", { status: 400 });
     }
 
     const formData = await request.formData();
@@ -35,6 +45,7 @@ export default {
 
     if (!(file instanceof File)) {
       return text("Missing file", 400, corsHeaders);
+      return new Response("Missing file", { status: 400 });
     }
 
     const telegramForm = new FormData();
@@ -116,3 +127,16 @@ function text(payload, status, corsHeaders) {
     headers: corsHeaders,
   });
 }
+      return Response.json(
+        { ok: false, error: telegramPayload },
+        { status: 502 },
+      );
+    }
+
+    return Response.json({
+      ok: true,
+      telegram_message_id: telegramPayload.result?.message_id,
+      telegram_chat_id: telegramPayload.result?.chat?.id,
+    });
+  },
+};

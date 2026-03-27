@@ -1,4 +1,5 @@
 const DEFAULT_UPLOAD_ENDPOINT = "https://YOUR-WORKER-URL.workers.dev/upload";
+const UPLOAD_ENDPOINT = "https://YOUR-WORKER-URL.workers.dev/upload";
 
 const els = {
   displayName: document.getElementById("displayName"),
@@ -133,6 +134,7 @@ els.uploadBtn.addEventListener("click", async () => {
     formData.append("caption", `Live stream archive: ${fileName}`);
 
     const response = await fetch(uploadEndpoint, {
+    const response = await fetch(UPLOAD_ENDPOINT, {
       method: "POST",
       headers: {
         "X-Upload-Key": uploadKey,
