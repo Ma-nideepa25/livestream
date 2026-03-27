@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Free Live Stream + Private Archive</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://meet.jit.si/external_api.js" defer></script>
+    <script src="./main.js" defer></script>
+  </head>
+  <body>
+    <main class="container">
+      <h1>Zero-Cost Live Stream App</h1>
+      <p class="subtitle">
+        Live group video (Jitsi) + upload recordings to private Telegram group.
+      </p>
+
+      <section class="card">
+        <h2>Join Live Room</h2>
+        <label>
+          Display name
+          <input id="displayName" placeholder="Your name" />
+        </label>
+        <label>
+          Room name
+          <input id="roomName" placeholder="my-private-room" />
+        </label>
+        <button id="joinBtn">Join Room</button>
+        <p class="hint">
+          Share room name only with your approved group participants.
+        </p>
+      </section>
+
+      <section class="card">
+        <h2>Record + Upload to Private Group</h2>
+        <label>
+          Upload endpoint
+          <input
+            id="uploadEndpoint"
+            placeholder="https://your-worker.workers.dev/upload"
+          />
+        </label>
+        <label>
+          Upload key
+          <input id="uploadKey" type="password" placeholder="Shared upload key" />
+        </label>
+        <div class="buttons">
+          <button id="startRecordBtn">Start Recording</button>
+          <button id="stopRecordBtn" disabled>Stop Recording</button>
+          <button id="uploadBtn" disabled>Upload Video</button>
+        </div>
+        <video id="preview" controls></video>
+        <p id="status" class="status">Idle</p>
+      </section>
+
+      <section class="card">
+        <h2>Meeting</h2>
+        <div id="jitsiContainer" class="jitsi"></div>
+      </section>
+    </main>
+  </body>
+</html>
