@@ -1,3 +1,4 @@
+const DEFAULT_UPLOAD_ENDPOINT = "https://YOUR-WORKER-URL.workers.dev/upload";
 const UPLOAD_ENDPOINT = "https://YOUR-WORKER-URL.workers.dev/upload";
 
 const els = {
@@ -7,6 +8,7 @@ const els = {
   startRecordBtn: document.getElementById("startRecordBtn"),
   stopRecordBtn: document.getElementById("stopRecordBtn"),
   uploadBtn: document.getElementById("uploadBtn"),
+  uploadEndpoint: document.getElementById("uploadEndpoint"),
   uploadKey: document.getElementById("uploadKey"),
   preview: document.getElementById("preview"),
   status: document.getElementById("status"),
@@ -18,6 +20,8 @@ let mediaRecorder = null;
 let mediaStream = null;
 let recordedChunks = [];
 let recordedBlob = null;
+
+els.uploadEndpoint.value = localStorage.getItem("uploadEndpoint") || DEFAULT_UPLOAD_ENDPOINT;
 
 function setStatus(message) {
   els.status.textContent = message;
@@ -106,10 +110,19 @@ els.uploadBtn.addEventListener("click", async () => {
   }
 
   const uploadKey = els.uploadKey.value.trim();
+  const uploadEndpoint = els.uploadEndpoint.value.trim();
+
+  if (!uploadEndpoint) {
+    setStatus("Upload endpoint is required.");
+    return;
+  }
+
   if (!uploadKey) {
     setStatus("Upload key is required.");
     return;
   }
+
+  localStorage.setItem("uploadEndpoint", uploadEndpoint);
 
   try {
     setStatus("Uploading to private Telegram group...");
@@ -120,6 +133,7 @@ els.uploadBtn.addEventListener("click", async () => {
     formData.append("file", recordedBlob, fileName);
     formData.append("caption", `Live stream archive: ${fileName}`);
 
+    const response = await fetch(uploadEndpoint, {
     const response = await fetch(UPLOAD_ENDPOINT, {
       method: "POST",
       headers: {

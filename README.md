@@ -56,6 +56,7 @@ Set Worker secrets:
 - `TELEGRAM_CHAT_ID`
 - `UPLOAD_SHARED_KEY` (a strong secret participants must know)
 
+
 Deploy worker (example with Wrangler):
 
 ```bash
@@ -65,7 +66,7 @@ npx wrangler login
 npx wrangler secret put TELEGRAM_BOT_TOKEN
 npx wrangler secret put TELEGRAM_CHAT_ID
 npx wrangler secret put UPLOAD_SHARED_KEY
-npx wrangler deploy
+
 ```
 
 Copy deployed Worker URL, e.g. `https://stream-upload.<subdomain>.workers.dev`.
@@ -74,6 +75,19 @@ Copy deployed Worker URL, e.g. `https://stream-upload.<subdomain>.workers.dev`.
 
 Serve `app/` as static files (Cloudflare Pages / GitHub Pages / Netlify free tier / local).
 
+Open app in browser and set **Upload endpoint** to your Worker URL + `/upload`.
+
+## Local run
+
+```bash
+cd app
+python3 -m http.server 8080
+# open http://localhost:8080
+```
+
+## Fastest way to run and see it (10 minutes)
+
+1. Start frontend locally:
 Set in `app/main.js`:
 
 - `UPLOAD_ENDPOINT` = your Worker URL + `/upload`
@@ -85,6 +99,57 @@ Then open app in browser.
 ```bash
 cd app
 python3 -m http.server 8080
+```
+
+2. Deploy Worker once (free Cloudflare account):
+
+```bash
+cd worker
+npm install
+npx wrangler login
+npx wrangler secret put TELEGRAM_BOT_TOKEN
+npx wrangler secret put TELEGRAM_CHAT_ID
+npx wrangler secret put UPLOAD_SHARED_KEY
+npx wrangler secret put ALLOWED_ORIGINS
+npx wrangler deploy
+```
+
+3. Open `http://localhost:8080`.
+4. Paste Worker `/upload` URL into **Upload endpoint** field.
+5. Enter same `UPLOAD_SHARED_KEY` value in **Upload key** field.
+6. Join a room, record, stop, then upload.
+
+If upload succeeds, the recording appears in your private Telegram group.
+
+## Make it available globally (public URL)
+
+Your app must be hosted over **HTTPS** for browser recording permissions.
+
+### Option A: Cloudflare Pages (recommended, free)
+
+```bash
+cd /workspace/livestream
+npm create cloudflare@latest livestream-frontend -- --framework=none
+# or manually create a Pages project that publishes the /app folder
+```
+
+Simpler manual flow:
+1. Push this repo to GitHub.
+2. In Cloudflare Pages, create a new project from that repo.
+3. Set **Build command**: *(empty)*.
+4. Set **Build output directory**: `app`.
+5. Deploy and copy your public URL (example: `https://livestream.pages.dev`).
+6. Set worker secret `ALLOWED_ORIGINS` to that exact origin.
+
+### Option B: GitHub Pages (free)
+
+1. Push repo to GitHub.
+2. In repo settings → Pages, deploy from branch and set folder to `/app`.
+3. Your app becomes available globally via GitHub Pages HTTPS URL.
+4. Add that origin to Worker `ALLOWED_ORIGINS`.
+
+After hosting globally, open your public URL and use your Worker `/upload` endpoint.
+
 # open http://localhost:8080
 ```
 
